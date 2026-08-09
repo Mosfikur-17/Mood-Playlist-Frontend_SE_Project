@@ -44,3 +44,17 @@ Thumbs.db
 node_modules/
 dist/
 .angular/
+
+# Python & Backend
+backend/.env
+*.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+

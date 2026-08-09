@@ -1,8 +1,14 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { catchError, of } from 'rxjs';
 import { Playlist, Track } from '../models/playlist.model';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class PlaylistService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apiUrl;
+
   readonly playlists = signal<Playlist[]>([
     {
       id: 'deep-focus',
@@ -10,17 +16,16 @@ export class PlaylistService {
       mood: 'Focused',
       genre: 'Lo-Fi',
       description: 'Minimal beats and calm textures for long coding sessions.',
-      tracks: 12,
-      duration: '2h 18m',
+      tracks: 5,
+      duration: '18m',
       accent: 'focus',
       coverColor: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)',
       tags: ['Focus', 'Lo-Fi', 'Instrumental'],
       tracksList: [
-        { id: 'df-1', title: 'Midnight Terminal', artist: 'LoFi Coder', duration: '3:45', mood: 'Focused', bpm: 70, audioFreq: 220 },
-        { id: 'df-2', title: 'Compiler Pass', artist: 'Async Waves', duration: '4:10', mood: 'Focused', bpm: 72, audioFreq: 240 },
-        { id: 'df-3', title: 'Binary Stream', artist: 'SynthPulse', duration: '3:20', mood: 'Focused', bpm: 68, audioFreq: 210 },
-        { id: 'df-4', title: 'Stack Overflow Serenade', artist: 'DevHarmonics', duration: '3:55', mood: 'Focused', bpm: 74, audioFreq: 230 },
-        { id: 'df-5', title: 'Coffee & Algorithms', artist: 'Byte Beats', duration: '4:30', mood: 'Focused', bpm: 75, audioFreq: 250 }
+        { id: 'jfKfPfyJRdk', title: 'Midnight Terminal', artist: 'LoFi Coder', duration: '3:45', mood: 'Focused', bpm: 70, audioFreq: 220 },
+        { id: '5qap5aO4i9A', title: 'Compiler Pass', artist: 'Async Waves', duration: '4:10', mood: 'Focused', bpm: 72, audioFreq: 240 },
+        { id: 'DWcJFNfaw9c', title: 'Binary Stream', artist: 'SynthPulse', duration: '3:20', mood: 'Focused', bpm: 68, audioFreq: 210 },
+        { id: 'WPni755-Krg', title: 'Stack Overflow Serenade', artist: 'DevHarmonics', duration: '3:55', mood: 'Focused', bpm: 74, audioFreq: 230 }
       ]
     },
     {
@@ -29,16 +34,15 @@ export class PlaylistService {
       mood: 'Happy',
       genre: 'Indie Pop',
       description: 'Bright, upbeat tracks to keep your coding energy high.',
-      tracks: 14,
-      duration: '1h 52m',
+      tracks: 4,
+      duration: '15m',
       accent: 'happy',
       coverColor: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #feada6 100%)',
       tags: ['Happy', 'Upbeat', 'Indie'],
       tracksList: [
-        { id: 'hf-1', title: 'Sunlit Refactor', artist: 'Bright Code', duration: '3:15', mood: 'Happy', bpm: 110, audioFreq: 294 },
-        { id: 'hf-2', title: 'First Deployment', artist: 'Sunny Side', duration: '3:40', mood: 'Happy', bpm: 115, audioFreq: 310 },
-        { id: 'hf-3', title: 'PR Approved', artist: 'Pixel Joy', duration: '2:58', mood: 'Happy', bpm: 120, audioFreq: 330 },
-        { id: 'hf-4', title: 'Frontend Magic', artist: 'UI Groove', duration: '3:25', mood: 'Happy', bpm: 112, audioFreq: 300 }
+        { id: '36YnV9STBkc', title: 'Sunlit Refactor', artist: 'Bright Code', duration: '3:15', mood: 'Happy', bpm: 110, audioFreq: 294 },
+        { id: 'lP26UCnoH9s', title: 'First Deployment', artist: 'Sunny Side', duration: '3:40', mood: 'Happy', bpm: 115, audioFreq: 310 },
+        { id: 'tGj85jK_V7Q', title: 'PR Approved', artist: 'Pixel Joy', duration: '2:58', mood: 'Happy', bpm: 120, audioFreq: 330 }
       ]
     },
     {
@@ -47,15 +51,14 @@ export class PlaylistService {
       mood: 'Relaxed',
       genre: 'Ambient',
       description: 'Soft ambient soundscapes for peaceful and steady work.',
-      tracks: 10,
-      duration: '2h 05m',
+      tracks: 3,
+      duration: '14m',
       accent: 'calm',
       coverColor: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
       tags: ['Relaxed', 'Ambient', 'Chill'],
       tracksList: [
-        { id: 'cc-1', title: 'Oceanic Drift', artist: 'Calm Horizon', duration: '5:10', mood: 'Relaxed', bpm: 60, audioFreq: 196 },
-        { id: 'cc-2', title: 'Soft Rain on Glass', artist: 'Nature Tones', duration: '4:45', mood: 'Relaxed', bpm: 58, audioFreq: 185 },
-        { id: 'cc-3', title: 'Zen Meditation', artist: 'Mindful State', duration: '6:00', mood: 'Relaxed', bpm: 55, audioFreq: 175 }
+        { id: '1tE-0CSt6aY', title: 'Oceanic Drift', artist: 'Calm Horizon', duration: '5:10', mood: 'Relaxed', bpm: 60, audioFreq: 196 },
+        { id: '2OEL4P1rub0', title: 'Soft Rain on Glass', artist: 'Nature Tones', duration: '4:45', mood: 'Relaxed', bpm: 58, audioFreq: 185 }
       ]
     },
     {
@@ -64,15 +67,14 @@ export class PlaylistService {
       mood: 'Energetic',
       genre: 'Electronic',
       description: 'Driving electronic tracks for high-output development.',
-      tracks: 16,
-      duration: '2h 34m',
+      tracks: 3,
+      duration: '12m',
       accent: 'energy',
       coverColor: 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)',
       tags: ['Energy', 'Electronic', 'Workout'],
       tracksList: [
-        { id: 'em-1', title: 'Cyberpunk Sprint', artist: 'Neon Rush', duration: '3:50', mood: 'Energetic', bpm: 128, audioFreq: 330 },
-        { id: 'em-2', title: 'Turbo Release', artist: 'Overclock', duration: '3:30', mood: 'Energetic', bpm: 132, audioFreq: 350 },
-        { id: 'em-3', title: 'Hyperloop Coding', artist: 'Vapor Drive', duration: '4:00', mood: 'Energetic', bpm: 130, audioFreq: 340 }
+        { id: 'N3oCS85HmgY', title: 'Cyberpunk Sprint', artist: 'Neon Rush', duration: '3:50', mood: 'Energetic', bpm: 128, audioFreq: 330 },
+        { id: '4xDzrJKXOOY', title: 'Turbo Release', artist: 'Overclock', duration: '3:30', mood: 'Energetic', bpm: 132, audioFreq: 350 }
       ]
     },
     {
@@ -81,15 +83,14 @@ export class PlaylistService {
       mood: 'Stressed',
       genre: 'Chill',
       description: 'Gentle tracks to reduce distraction and bring you back to flow.',
-      tracks: 11,
-      duration: '1h 36m',
+      tracks: 3,
+      duration: '12m',
       accent: 'stress',
       coverColor: 'linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%)',
       tags: ['Stress Relief', 'Chill', 'Piano'],
       tracksList: [
-        { id: 'sr-1', title: 'Breathe & Reset', artist: 'Peaceful Mind', duration: '4:15', mood: 'Stressed', bpm: 62, audioFreq: 200 },
-        { id: 'sr-2', title: 'Soft Piano Sanctuary', artist: 'Acoustic Soul', duration: '3:50', mood: 'Stressed', bpm: 60, audioFreq: 190 },
-        { id: 'sr-3', title: 'Warm Tea', artist: 'Gentle Waves', duration: '4:20', mood: 'Stressed', bpm: 65, audioFreq: 210 }
+        { id: 'M5QY2_8704o', title: 'Breathe & Reset', artist: 'Peaceful Mind', duration: '4:15', mood: 'Stressed', bpm: 62, audioFreq: 200 },
+        { id: 'lTRiuFIWV54', title: 'Soft Piano Sanctuary', artist: 'Acoustic Soul', duration: '3:50', mood: 'Stressed', bpm: 60, audioFreq: 190 }
       ]
     },
     {
@@ -98,20 +99,42 @@ export class PlaylistService {
       mood: 'Sad',
       genre: 'Acoustic',
       description: 'Warm acoustic and piano tracks for quiet coding nights.',
-      tracks: 12,
-      duration: '1h 58m',
+      tracks: 3,
+      duration: '12m',
       accent: 'night',
       coverColor: 'linear-gradient(135deg, #2c3e50 0%, #000000 100%)',
       tags: ['Acoustic', 'Piano', 'Night'],
       tracksList: [
-        { id: 'ln-1', title: 'Midnight Echoes', artist: 'Nocturne', duration: '4:05', mood: 'Sad', bpm: 64, audioFreq: 175 },
-        { id: 'ln-2', title: 'Empty Office Lights', artist: 'City Lights', duration: '3:48', mood: 'Sad', bpm: 66, audioFreq: 180 },
-        { id: 'ln-3', title: '3 AM Refactor', artist: 'Solitude Beats', duration: '4:30', mood: 'Sad', bpm: 60, audioFreq: 170 }
+        { id: 'S_MOd40zlYU', title: 'Midnight Echoes', artist: 'Nocturne', duration: '4:05', mood: 'Sad', bpm: 64, audioFreq: 175 },
+        { id: '77ZozI0rw7w', title: 'Empty Office Lights', artist: 'City Lights', duration: '3:48', mood: 'Sad', bpm: 66, audioFreq: 180 }
       ]
     }
   ]);
 
   favorites = signal<string[]>(this.loadFavorites());
+
+  constructor() {
+    this.syncPlaylistsWithBackend();
+  }
+
+  syncPlaylistsWithBackend(): void {
+    this.http.get<any[]>(`${this.baseUrl}/playlists`).pipe(
+      catchError(() => of([]))
+    ).subscribe(remotePlaylists => {
+      if (remotePlaylists && remotePlaylists.length > 0) {
+        const transformed: Playlist[] = remotePlaylists.map(p => this.transformBackendPlaylist(p));
+        // Merge remote playlists with defaults avoiding duplicates
+        const current = this.playlists();
+        const merged = [...transformed];
+        current.forEach(c => {
+          if (!merged.some(m => m.id === c.id)) {
+            merged.push(c);
+          }
+        });
+        this.playlists.set(merged);
+      }
+    });
+  }
 
   toggleFavorite(id: string): void {
     const current = this.favorites();
@@ -142,34 +165,91 @@ export class PlaylistService {
       mood: newPl.mood || 'Focused',
       genre: newPl.genre || 'Lo-Fi',
       description: newPl.description || 'Custom user generated coding playlist.',
-      tracks: newPl.tracks || 10,
-      duration: newPl.duration || '1h 20m',
+      tracks: newPl.tracksList ? newPl.tracksList.length : (newPl.tracks || 4),
+      duration: newPl.duration || '16m',
       accent: newPl.accent || 'focus',
       coverColor: newPl.coverColor || 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)',
       tags: newPl.tags || [newPl.mood || 'Focus', newPl.genre || 'Lo-Fi'],
-      tracksList: [
+      tracksList: newPl.tracksList || [
         {
           id: `trk-${Date.now()}-1`,
           title: `${newPl.title || 'Track'} One`,
-          artist: 'Custom Artist',
+          artist: 'LoFi Coder',
           duration: '3:30',
           mood: newPl.mood || 'Focused',
           bpm: 75,
           audioFreq: 220
-        },
-        {
-          id: `trk-${Date.now()}-2`,
-          title: `${newPl.title || 'Track'} Two`,
-          artist: 'Custom Artist',
-          duration: '4:00',
-          mood: newPl.mood || 'Focused',
-          bpm: 78,
-          audioFreq: 240
         }
       ]
     };
+
     this.playlists.set([created, ...this.playlists()]);
+
+    // Async save to backend MongoDB
+    this.http.post<any>(`${this.baseUrl}/playlists`, {
+      title: created.title,
+      mood: created.mood.toLowerCase(),
+      genre: created.genre,
+      description: created.description,
+      accent: created.accent,
+      cover_color: created.coverColor,
+      tags: created.tags,
+      videos: (created.tracksList || []).map(t => ({
+        video_id: t.id,
+        title: t.title,
+        thumbnail: 'https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg',
+        channel_title: t.artist,
+        description: t.title,
+        duration: t.duration,
+        bpm: t.bpm || 72,
+        audio_freq: t.audioFreq || 220
+      }))
+    }).pipe(
+      catchError(err => {
+        console.warn('Playlist save fallback: offline or connection error', err);
+        return of(null);
+      })
+    ).subscribe(saved => {
+      if (saved && saved.id) {
+        created.id = saved.id;
+      }
+    });
+
     return created;
+  }
+
+  deletePlaylist(id: string): void {
+    this.playlists.set(this.playlists().filter(p => p.id !== id));
+    this.http.delete(`${this.baseUrl}/playlists/${id}`).pipe(
+      catchError(() => of(null))
+    ).subscribe();
+  }
+
+  private transformBackendPlaylist(dto: any): Playlist {
+    const videos = dto.videos || [];
+    const tracksList: Track[] = videos.map((v: any) => ({
+      id: v.video_id || `v-${Math.random()}`,
+      title: v.title || 'Coding Track',
+      artist: v.channel_title || 'YouTube Music',
+      duration: v.duration || '3:45',
+      mood: dto.mood || 'Focused',
+      bpm: v.bpm || 72,
+      audioFreq: v.audio_freq || 220
+    }));
+
+    return {
+      id: dto.id || `pl-${Math.random()}`,
+      title: dto.title || 'Saved Playlist',
+      mood: dto.mood || 'Focused',
+      genre: dto.genre || 'Lo-Fi',
+      description: dto.description || 'Saved coding playlist.',
+      tracks: dto.tracks || tracksList.length,
+      duration: dto.duration || '16m',
+      accent: dto.accent || 'focus',
+      coverColor: dto.cover_color || 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)',
+      tags: dto.tags || [dto.mood || 'Focused'],
+      tracksList
+    };
   }
 
   private loadFavorites(): string[] {

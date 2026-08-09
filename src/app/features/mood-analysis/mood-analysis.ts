@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MoodCardComponent } from '../../shared/mood-card/mood-card';
 import { PlaylistCardComponent } from '../../shared/playlist-card/playlist-card';
 import { PlaylistService } from '../../core/services/playlist.service';
+import { RecommendationService } from '../../core/services/recommendation.service';
 import { AudioPlayerService, AmbientSoundType } from '../../core/services/audio-player.service';
 import { SessionService } from '../../core/services/session.service';
 import { Playlist } from '../../core/models/playlist.model';
@@ -21,6 +22,7 @@ import { Playlist } from '../../core/models/playlist.model';
 })
 export class MoodAnalysisComponent {
   readonly playlistService = inject(PlaylistService);
+  readonly recommendationService = inject(RecommendationService);
   readonly audioService = inject(AudioPlayerService);
   readonly sessionService = inject(SessionService);
   readonly router = inject(Router);
@@ -64,17 +66,26 @@ export class MoodAnalysisComponent {
   runAnalysis(): void {
     this.isAnalyzing = true;
     this.analysisDone = false;
+    const intensity = this.energyLevel === 'high' ? 8 : this.energyLevel === 'medium' ? 5 : 3;
 
-    setTimeout(() => {
-      const matched = this.playlistService.getByMood(this.selectedMood);
-      this.recommendedPlaylist = matched.length > 0 ? matched[0] : this.playlistService.playlists()[0];
-      this.isAnalyzing = false;
-      this.analysisDone = true;
-    }, 600);
+    this.recommendationService.generateRecommendation(this.selectedMood, intensity, this.taskType).subscribe({
+      next: (playlist) => {
+        this.recommendedPlaylist = playlist;
+        this.isAnalyzing = false;
+        this.analysisDone = true;
+      },
+      error: () => {
+        const matched = this.playlistService.getByMood(this.selectedMood);
+        this.recommendedPlaylist = matched.length > 0 ? matched[0] : this.playlistService.playlists()[0];
+        this.isAnalyzing = false;
+        this.analysisDone = true;
+      }
+    });
   }
 
   startSession(): void {
     if (this.recommendedPlaylist) {
+      this.playlistService.addPlaylist(this.recommendedPlaylist);
       this.audioService.setAmbientSound(this.selectedAmbient);
       this.audioService.playPlaylist(this.recommendedPlaylist);
       this.sessionService.addSession(this.selectedMood, this.recommendedPlaylist.title, '45 min');
