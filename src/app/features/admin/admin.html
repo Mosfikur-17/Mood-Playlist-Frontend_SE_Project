@@ -1,0 +1,91 @@
+<section class="admin-page">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">ADMIN CONTROL CENTER</span>
+      <h1>Playlist Management & System Overview</h1>
+      <p>Manage the global music catalog, view real-time system metrics, and publish new soundscapes.</p>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card glass-card">
+        <div class="m-icon">🎵</div>
+        <div class="m-data">
+          <span class="m-val">{{ playlistService.playlists().length }}</span>
+          <span class="m-lbl">Active Playlists</span>
+        </div>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="m-icon">🎧</div>
+        <div class="m-data">
+          <span class="m-val">{{ sessionService.totalSessions() }}</span>
+          <span class="m-lbl">Total User Sessions</span>
+        </div>
+      </div>
+
+      <div class="metric-card glass-card">
+        <div class="m-icon">⚡</div>
+        <div class="m-data">
+          <span class="m-val">99.9%</span>
+          <span class="m-lbl">Audio Synth Uptime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Playlist Form -->
+    <div class="form-card glass-card">
+      <div class="card-header">
+        <h2>✨ Publish New Soundtrack</h2>
+        <p>Created playlists will instantly appear across the home page and playlists directory.</p>
+      </div>
+
+      <div class="toast-alert" *ngIf="message">
+        {{ message }}
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="title">Playlist Title</label>
+          <input id="title" name="title" [(ngModel)]="newTitle" required placeholder="e.g., Midnight Rust Refactor" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="mood">Target Mood</label>
+          <select id="mood" name="mood" [(ngModel)]="newMood" class="form-input">
+            @for (m of moodOptions; track m) {
+              <option [value]="m">{{ m }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="genre">Genre Category</label>
+          <select id="genre" name="genre" [(ngModel)]="newGenre" class="form-input">
+            @for (g of genreOptions; track g) {
+              <option [value]="g">{{ g }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="tracks">Track Count</label>
+          <input id="tracks" name="tracks" type="number" [(ngModel)]="newTracks" class="form-input">
+        </div>
+
+        <div class="form-group full-width">
+          <label for="desc">Description</label>
+          <textarea id="desc" name="desc" [(ngModel)]="newDescription" rows="3" placeholder="Brief description of the soundscape ambiance..." class="form-input"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" (click)="addPlaylist()">
+          ➕ Create Playlist
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -1,22 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { MoodCardComponent } from './mood-card';
 
-import { MoodCard } from './mood-card';
-
-describe('MoodCard', () => {
-  let component: MoodCard;
-  let fixture: ComponentFixture<MoodCard>;
-
+describe('MoodCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoodCard],
+      imports: [MoodCardComponent]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(MoodCard);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create mood card component', () => {
+    const fixture = TestBed.createComponent(MoodCardComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

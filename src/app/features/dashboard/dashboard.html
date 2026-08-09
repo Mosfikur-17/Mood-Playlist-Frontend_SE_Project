@@ -1,0 +1,113 @@
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-card glass-card">
+      <div class="welcome-meta">
+        <div class="user-big-avatar">
+          {{ (auth.user()?.name || 'U').charAt(0).toUpperCase() }}
+        </div>
+        <div>
+          <span class="badge badge-focus">DEVELOPER WORKSPACE</span>
+          <h1>Welcome back, {{ auth.user()?.name || 'Developer' }}!</h1>
+          <p>Ready to lock into your next coding sprint?</p>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <a routerLink="/mood-analysis" class="btn-primary">
+          ✨ New Mood Session
+        </a>
+        <a routerLink="/playlists" class="btn-secondary">
+          🎵 Browse Library
+        </a>
+      </div>
+    </div>
+
+    <!-- Overview Stats Grid -->
+    <div class="stats-grid">
+      
+      <div class="stat-card glass-card">
+        <div class="stat-icon">🎧</div>
+        <div class="stat-info">
+          <span class="stat-num">{{ sessionService.totalSessions() }}</span>
+          <span class="stat-title">Sessions Completed</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-info">
+          <span class="stat-num">{{ sessionService.topMood() }}</span>
+          <span class="stat-title">Top Coding Mood</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">❤️</div>
+        <div class="stat-info">
+          <span class="stat-num">{{ favoritePlaylists.length }}</span>
+          <span class="stat-title">Saved Playlists</span>
+        </div>
+      </div>
+
+      <div class="stat-card glass-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-info">
+          <span class="stat-num">{{ sessionService.totalSessions() * 45 }} min</span>
+          <span class="stat-title">Focus Time Logged</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent Sessions & Saved Playlists -->
+    <div class="dashboard-split">
+      
+      <!-- Saved Favorites Column -->
+      <div class="split-col">
+        <div class="col-header">
+          <h2>Your Saved Playlists</h2>
+          <a routerLink="/playlists" class="link-sm">Explore More →</a>
+        </div>
+
+        <div class="saved-list" *ngIf="favoritePlaylists.length > 0; else noFavsTpl">
+          @for (pl of favoritePlaylists; track pl.id) {
+            <app-playlist-card [playlist]="pl"></app-playlist-card>
+          }
+        </div>
+
+        <ng-template #noFavsTpl>
+          <div class="empty-favs glass-card">
+            <p>You haven't saved any playlists yet.</p>
+            <a routerLink="/playlists" class="btn-secondary btn-sm">Explore Playlists</a>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Recent Session Activity Column -->
+      <div class="split-col">
+        <div class="col-header">
+          <h2>Recent Sessions</h2>
+          <a routerLink="/history" class="link-sm">Full History →</a>
+        </div>
+
+        <div class="recent-list glass-card">
+          @for (s of sessionService.sessions().slice(0, 5); track s.id) {
+            <div class="session-item">
+              <div class="session-icon">
+                <span class="badge" [ngClass]="'badge-' + s.mood.toLowerCase()">{{ s.mood }}</span>
+              </div>
+              <div class="session-info">
+                <strong>{{ s.playlist }}</strong>
+                <small>{{ s.date | date:'short' }} • {{ s.duration }}</small>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>

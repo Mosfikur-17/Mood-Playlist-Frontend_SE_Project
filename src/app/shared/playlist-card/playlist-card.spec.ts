@@ -1,22 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { PlaylistCardComponent } from './playlist-card';
 
-import { PlaylistCard } from './playlist-card';
-
-describe('PlaylistCard', () => {
-  let component: PlaylistCard;
-  let fixture: ComponentFixture<PlaylistCard>;
-
+describe('PlaylistCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlaylistCard],
+      imports: [PlaylistCardComponent]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(PlaylistCard);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create playlist card component', () => {
+    const fixture = TestBed.createComponent(PlaylistCardComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

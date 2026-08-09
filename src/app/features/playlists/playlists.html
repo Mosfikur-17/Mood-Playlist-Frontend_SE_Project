@@ -1,1 +1,99 @@
-<p>playlists works!</p>
+<section class="playlists-page">
+  <div class="playlists-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="badge badge-focus">CURATED SOUNDTRACKS</span>
+      <h1>Coding Playlists & Soundscapes</h1>
+      <p>Discover minimal beats, chill lofi, binaural focus tones, and upbeat indie tracks crafted for programmers.</p>
+    </div>
+
+    <!-- Search & Filter Control Bar -->
+    <div class="filter-bar glass-card">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          placeholder="Search by title, genre, tag or mood..." 
+          [(ngModel)]="searchQuery"
+        />
+        <button class="clear-search" *ngIf="searchQuery" (click)="searchQuery = ''">✕</button>
+      </div>
+
+      <div class="mood-pills">
+        @for (m of moodFilters; track m) {
+          <button 
+            class="pill-btn" 
+            [class.active]="selectedMood === m"
+            (click)="setMoodFilter(m)"
+          >
+            {{ m }}
+          </button>
+        }
+      </div>
+
+      <button class="fav-toggle-btn" [class.active]="showFavoritesOnly" (click)="toggleFavoritesOnly()">
+        {{ showFavoritesOnly ? '❤️ Saved Only' : '🤍 Show Saved' }}
+      </button>
+    </div>
+
+    <!-- Playlists Grid -->
+    <div class="playlist-grid" *ngIf="filteredPlaylists.length > 0; else emptyTpl">
+      @for (pl of filteredPlaylists; track pl.id) {
+        <app-playlist-card
+          [playlist]="pl"
+          [title]="pl.title"
+          [mood]="pl.mood"
+          [description]="pl.description"
+          [songCount]="pl.tracks"
+          (viewTracks)="openTracksModal($event)">
+        </app-playlist-card>
+      }
+    </div>
+
+    <ng-template #emptyTpl>
+      <div class="empty-state glass-card">
+        <div class="empty-icon">🎵</div>
+        <h3>No playlists match your filter</h3>
+        <p>Try resetting your search query or switching to 'All' moods.</p>
+        <button class="btn-secondary" (click)="selectedMood = 'All'; searchQuery = ''; showFavoritesOnly = false">
+          Reset Filters
+        </button>
+      </div>
+    </ng-template>
+
+    <!-- Tracklist Modal Drawer -->
+    <div class="modal-backdrop" *ngIf="selectedPlaylistForTracks as pl" (click)="closeTracksModal()">
+      <div class="modal-card glass-card" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-cover" [style.background]="pl.coverColor">🎧</div>
+            <div>
+              <h2>{{ pl.title }}</h2>
+              <span class="badge" [ngClass]="'badge-' + pl.mood.toLowerCase()">{{ pl.mood }}</span>
+            </div>
+          </div>
+          <button class="close-btn" (click)="closeTracksModal()">✕</button>
+        </div>
+
+        <p class="modal-desc">{{ pl.description }}</p>
+
+        <div class="tracklist-container">
+          <h4>Track Listing ({{ pl.tracksList?.length || 0 }} Tracks)</h4>
+          <div class="track-row" *ngFor="let trk of pl.tracksList; let i = index" (click)="playTrackFromModal(trk, pl, i)">
+            <span class="track-num">{{ i + 1 }}</span>
+            <div class="track-meta">
+              <span class="track-name">{{ trk.title }}</span>
+              <span class="track-artist">{{ trk.artist }} • {{ trk.bpm }} BPM</span>
+            </div>
+            <span class="track-dur">{{ trk.duration }}</span>
+            <button class="play-track-btn" title="Play Track">▶</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>

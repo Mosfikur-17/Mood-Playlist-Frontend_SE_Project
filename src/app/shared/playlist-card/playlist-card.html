@@ -1,1 +1,39 @@
-<p>playlist-card works!</p>
+<article class="playlist-card glass-card" (click)="onCardClick()">
+  
+  <div class="cover-art" [style.background]="playlist?.coverColor || 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)'">
+    <div class="cover-icon">🎧</div>
+    
+    <!-- Favorite Heart Button -->
+    <button class="fav-button" [class.is-fav]="isFav" (click)="toggleFav($event)" title="Toggle Favorite">
+      {{ isFav ? '❤️' : '🤍' }}
+    </button>
+
+    <!-- Overlay Play Button -->
+    <button class="play-overlay-btn" [class.playing]="isCurrentPlaylistPlaying" (click)="togglePlay($event)">
+      {{ isCurrentPlaylistPlaying ? '❚❚' : '▶' }}
+    </button>
+
+    <div class="playing-indicator" *ngIf="isCurrentPlaylistPlaying">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="playlist-details">
+    <div class="card-header">
+      <h3 class="playlist-title">{{ playlist?.title || title }}</h3>
+      <span class="badge" [ngClass]="'badge-' + (playlist?.mood || mood || 'focus').toLowerCase()">
+        {{ playlist?.mood || mood }}
+      </span>
+    </div>
+
+    <p class="playlist-desc">{{ playlist?.description || description }}</p>
+
+    <div class="card-footer">
+      <span class="meta-info">
+        🎵 {{ playlist?.tracks || songCount || 12 }} tracks • {{ playlist?.duration || '1h 45m' }}
+      </span>
+      <span class="view-link">View Tracks →</span>
+    </div>
+  </div>
+
+</article>

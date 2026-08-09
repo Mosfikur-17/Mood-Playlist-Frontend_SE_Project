@@ -1,0 +1,158 @@
+.history-page {
+  padding: 60px 24px;
+}
+
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.page-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 2.6rem;
+    margin: 12px 0;
+  }
+  p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+  }
+}
+
+.history-stats {
+  padding: 28px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+}
+
+.h-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.h-num {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.h-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.clear-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.25);
+  }
+}
+
+.history-card {
+  padding: 32px;
+}
+
+.card-title-bar {
+  margin-bottom: 24px;
+  h2 { font-size: 1.4rem; }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  td {
+    padding: 16px;
+    font-size: 0.92rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.time-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.playlist-cell {
+  color: var(--text-primary);
+}
+
+.replay-btn {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--accent-primary);
+    color: #ffffff;
+  }
+}
+
+.empty-state {
+  padding: 60px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  .empty-icon { font-size: 3rem; }
+  h3 { font-size: 1.3rem; }
+  p { color: var(--text-muted); }
+}

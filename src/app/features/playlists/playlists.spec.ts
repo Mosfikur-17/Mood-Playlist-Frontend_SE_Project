@@ -1,22 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { PlaylistsComponent } from './playlists';
 
-import { Playlists } from './playlists';
-
-describe('Playlists', () => {
-  let component: Playlists;
-  let fixture: ComponentFixture<Playlists>;
-
+describe('PlaylistsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Playlists],
+      imports: [PlaylistsComponent]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(Playlists);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create playlists component', () => {
+    const fixture = TestBed.createComponent(PlaylistsComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

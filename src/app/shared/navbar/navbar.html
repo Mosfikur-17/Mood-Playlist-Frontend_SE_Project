@@ -1,1 +1,85 @@
-<p>navbar works!</p>
+<nav class="navbar">
+  <div class="navbar-container">
+    
+    <!-- Logo -->
+    <a routerLink="/home" class="logo">
+      <span class="logo-icon">🎧</span>
+      <span class="logo-text">Mood<span class="logo-highlight">Playlist</span></span>
+    </a>
+
+    <!-- Navigation Links -->
+    <div class="nav-links" [class.open]="isMobileMenuOpen">
+      <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="isMobileMenuOpen = false">
+        Home
+      </a>
+      <a routerLink="/playlists" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+        Playlists
+      </a>
+      <a routerLink="/mood-analysis" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+        Mood Matrix
+      </a>
+      <a routerLink="/history" routerLinkActive="active" (click)="isMobileMenuOpen = false" *ngIf="auth.isLoggedIn()">
+        History
+      </a>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="isMobileMenuOpen = false" *ngIf="auth.isLoggedIn()">
+        Dashboard
+      </a>
+      <a routerLink="/faq" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+        FAQ
+      </a>
+      <a routerLink="/contact" routerLinkActive="active" (click)="isMobileMenuOpen = false">
+        Contact
+      </a>
+    </div>
+
+    <!-- Right User Action / Auth Section -->
+    <div class="nav-actions">
+      <ng-container *ngIf="auth.user() as user; else loggedOutTpl">
+        <div class="user-profile-menu">
+          <button class="user-btn" (click)="toggleUserMenu()">
+            <div class="user-avatar">
+              {{ user.name.charAt(0).toUpperCase() }}
+            </div>
+            <span class="user-name">{{ user.name }}</span>
+            <span class="dropdown-arrow">▾</span>
+          </button>
+
+          <!-- User Dropdown Menu -->
+          <div class="dropdown-menu" *ngIf="isUserMenuOpen">
+            <div class="menu-header">
+              <div class="user-full-name">{{ user.name }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+            <hr />
+            <a routerLink="/profile" (click)="isUserMenuOpen = false" class="menu-item">
+              👤 Profile
+            </a>
+            <a routerLink="/settings" (click)="isUserMenuOpen = false" class="menu-item">
+              ⚙️ Settings
+            </a>
+            <a routerLink="/admin" (click)="isUserMenuOpen = false" class="menu-item">
+              🛡️ Admin Panel
+            </a>
+            <hr />
+            <button (click)="logout()" class="menu-item logout-item">
+              🚪 Log Out
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #loggedOutTpl>
+        <div class="auth-buttons">
+          <a routerLink="/login" class="btn-login">Log In</a>
+          <a routerLink="/register" class="btn-primary btn-sm">Get Started</a>
+        </div>
+      </ng-template>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="hamburger-btn" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+        ☰
+      </button>
+    </div>
+
+  </div>
+</nav>

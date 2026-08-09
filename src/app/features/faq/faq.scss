@@ -1,0 +1,86 @@
+.faq-page {
+  padding: 60px 24px;
+}
+
+.faq-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.page-header {
+  text-align: center;
+  h1 { font-size: 2.5rem; margin: 10px 0; }
+  p { color: var(--text-secondary); }
+}
+
+.search-box {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .search-icon { font-size: 1.2rem; color: var(--text-muted); }
+
+  input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+  }
+}
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.accordion-card {
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &.open {
+    border-color: var(--accent-primary);
+  }
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 24px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+
+  h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+
+  .toggle-icon {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+  }
+}
+
+.accordion-body {
+  padding: 0 24px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.2s ease-out;
+
+  p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    padding-top: 16px;
+  }
+}

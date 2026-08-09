@@ -1,1 +1,82 @@
-<p>history works!</p>
+<section class="history-page">
+  <div class="history-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">LISTENING CHRONICLES</span>
+      <h1>Session History & Analytics</h1>
+      <p>Review your historical coding audio sessions, mood distributions, and total concentration hours.</p>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="history-stats glass-card">
+      <div class="h-stat">
+        <span class="h-num">{{ sessionService.totalSessions() }}</span>
+        <span class="h-label">Total Sessions Logged</span>
+      </div>
+      <div class="h-stat">
+        <span class="h-num">{{ sessionService.topMood() }}</span>
+        <span class="h-label">Primary Flow Mood</span>
+      </div>
+      <div class="h-stat">
+        <span class="h-num">{{ sessionService.totalSessions() * 45 }} minutes</span>
+        <span class="h-label">Calculated Focus Time</span>
+      </div>
+      <button class="clear-btn" (click)="clearAll()" *ngIf="sessionService.sessions().length > 0">
+        🗑️ Clear History
+      </button>
+    </div>
+
+    <!-- History Table Container -->
+    <div class="history-card glass-card">
+      <div class="card-title-bar">
+        <h2>Past Audio Sessions</h2>
+      </div>
+
+      <div class="table-responsive" *ngIf="sessionService.sessions().length > 0; else emptyHistory">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Mood Context</th>
+              <th>Playlist Title</th>
+              <th>Duration</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of sessionService.sessions(); track s.id) {
+              <tr>
+                <td class="date-cell">
+                  📅 {{ s.date | date:'mediumDate' }}
+                  <span class="time-sub">{{ s.date | date:'shortTime' }}</span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="'badge-' + s.mood.toLowerCase()">{{ s.mood }}</span>
+                </td>
+                <td class="playlist-cell">
+                  <strong>{{ s.playlist }}</strong>
+                </td>
+                <td>⏱️ {{ s.duration }}</td>
+                <td>
+                  <button class="replay-btn" (click)="replaySession(s)" title="Replay Session">
+                    ▶ Replay
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyHistory>
+        <div class="empty-state">
+          <div class="empty-icon">📜</div>
+          <h3>No Listening History Found</h3>
+          <p>Start a new mood session from the home page or mood matrix to log your focus time.</p>
+        </div>
+      </ng-template>
+
+    </div>
+
+  </div>
+</section>

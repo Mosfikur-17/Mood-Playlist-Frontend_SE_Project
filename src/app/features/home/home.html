@@ -1,1 +1,120 @@
-<p>home works!</p>
+<!-- Hero Banner -->
+<section class="hero-section">
+  <div class="hero-container">
+    
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      AI-ASSISTED MOOD AUDIO ENGINE
+    </div>
+
+    <h1 class="hero-title">
+      Code in the Flow with <span class="gradient-text">Mood-Driven</span> Music.
+    </h1>
+
+    <p class="hero-subtitle">
+      Eliminate distractions. Select your current mental state or take our instant mood analysis quiz to receive personalized soundtracks crafted for developers.
+    </p>
+
+    <div class="hero-actions">
+      <a routerLink="/mood-analysis" class="btn-primary">
+        ✨ Analyze My Mood
+      </a>
+      <a routerLink="/playlists" class="btn-secondary">
+        🎵 Explore All Playlists
+      </a>
+    </div>
+
+    <!-- Live Metrics Counter Strip -->
+    <div class="stats-strip glass-card">
+      <div class="stat-item">
+        <span class="stat-value">14,200+</span>
+        <span class="stat-label">Coding Hours Logged</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value">6 Moods</span>
+        <span class="stat-label">Precision Profiles</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-value">98.4%</span>
+        <span class="stat-label">Flow State Satisfaction</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Interactive Quick Mood Picker Section -->
+<section class="section-container">
+  <div class="section-header">
+    <span class="section-tag">INSTANT SELECTOR</span>
+    <h2>How are you feeling right now?</h2>
+    <p>Click a mood to immediately launch a tailored soundscape in your audio player.</p>
+  </div>
+
+  <div class="mood-grid">
+    @for (m of moods; track m.name) {
+      <app-mood-card
+        [mood]="m.name"
+        [icon]="m.icon"
+        [description]="m.description"
+        [selected]="selectedMood === m.name"
+        (moodSelected)="selectMood($event)">
+      </app-mood-card>
+    }
+  </div>
+</section>
+
+<!-- Featured Playlists Section -->
+<section class="section-container">
+  <div class="section-header flex-header">
+    <div>
+      <span class="section-tag">FEATURED SOUNDTRACKS</span>
+      <h2>Top Playlists for Developers</h2>
+    </div>
+    <a routerLink="/playlists" class="view-all-link">View All Playlists →</a>
+  </div>
+
+  <div class="playlist-grid">
+    @for (pl of playlistService.playlists(); track pl.id) {
+      <app-playlist-card
+        [playlist]="pl"
+        [title]="pl.title"
+        [mood]="pl.mood"
+        [description]="pl.description"
+        [songCount]="pl.tracks">
+      </app-playlist-card>
+    }
+  </div>
+</section>
+
+<!-- How It Works & Benefits -->
+<section class="section-container">
+  <div class="how-it-works-card glass-card">
+    <div class="section-header">
+      <span class="section-tag">WORKFLOW</span>
+      <h2>Designed to Maximize Deep Work</h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>Select Mood Context</h3>
+        <p>Tell us if you are debugging, writing initial architecture, or relaxing after a release.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>Synthesize Audio</h3>
+        <p>Our Web Audio engine balances ambient frequencies, binaural beats, and lofi chord progressions.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>Lock into Flow</h3>
+        <p>Track your session time, save favorite playlists, and monitor your weekly productivity trends.</p>
+      </div>
+    </div>
+  </div>
+</section>

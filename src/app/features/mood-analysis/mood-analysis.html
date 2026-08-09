@@ -1,1 +1,124 @@
-<p>mood-analysis works!</p>
+<section class="analysis-page">
+  <div class="analysis-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">AI MOOD MATRIX</span>
+      <h1>Personalized Mood & Soundscape Engine</h1>
+      <p>Configure your mental state, current programming task, and desired ambient layer for optimal cognitive flow.</p>
+    </div>
+
+    <!-- Matrix Controls Grid -->
+    <div class="matrix-card glass-card">
+      
+      <!-- Step 1: Mood Selection -->
+      <div class="matrix-step">
+        <h3>1. Select Primary Emotional State</h3>
+        <div class="mood-options">
+          @for (m of moods; track m.name) {
+            <app-mood-card
+              [mood]="m.name"
+              [icon]="m.icon"
+              [description]="m.description"
+              [selected]="selectedMood === m.name"
+              (moodSelected)="selectMood($event)">
+            </app-mood-card>
+          }
+        </div>
+      </div>
+
+      <!-- Step 2: Energy Level & Task Type -->
+      <div class="matrix-row">
+        
+        <div class="matrix-subgroup">
+          <h3>2. Current Energy Level</h3>
+          <div class="pill-group">
+            <button class="pill-btn" [class.active]="energyLevel === 'low'" (click)="setEnergy('low')">
+              🌱 Low (Chill)
+            </button>
+            <button class="pill-btn" [class.active]="energyLevel === 'medium'" (click)="setEnergy('medium')">
+              ⚡ Medium (Steady)
+            </button>
+            <button class="pill-btn" [class.active]="energyLevel === 'high'" (click)="setEnergy('high')">
+              🔥 High (Sprint)
+            </button>
+          </div>
+        </div>
+
+        <div class="matrix-subgroup">
+          <h3>3. Programming Task</h3>
+          <div class="pill-group">
+            @for (t of tasks; track t) {
+              <button class="pill-btn" [class.active]="taskType === t" (click)="setTask(t)">
+                💻 {{ t }}
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Step 4: Ambient Sound Layer -->
+      <div class="matrix-step">
+        <h3>4. Background Ambient Noise Layer</h3>
+        <div class="pill-group">
+          <button class="pill-btn" [class.active]="selectedAmbient === 'off'" (click)="setAmbient('off')">
+            🔇 Off
+          </button>
+          <button class="pill-btn" [class.active]="selectedAmbient === 'rain'" (click)="setAmbient('rain')">
+            🌧️ Soft Rain
+          </button>
+          <button class="pill-btn" [class.active]="selectedAmbient === 'ocean'" (click)="setAmbient('ocean')">
+            🌊 Ocean Waves
+          </button>
+          <button class="pill-btn" [class.active]="selectedAmbient === 'white-noise'" (click)="setAmbient('white-noise')">
+            📻 White Noise
+          </button>
+        </div>
+      </div>
+
+      <!-- Generate Action -->
+      <div class="action-bar">
+        <button class="btn-primary btn-lg" (click)="runAnalysis()" [disabled]="isAnalyzing">
+          <span *ngIf="!isAnalyzing">🧠 Generate Recommended Soundscape</span>
+          <span *ngIf="isAnalyzing">⏳ Analyzing Cognitive Frequencies...</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Analysis Result Section -->
+    <div class="result-card glass-card" *ngIf="analysisDone && recommendedPlaylist">
+      <div class="result-header">
+        <div class="result-title">
+          <span class="section-tag">OPTIMAL MATCH FOUND</span>
+          <h2>{{ recommendedPlaylist.title }}</h2>
+          <p>Matched for <strong>{{ selectedMood }}</strong> mood during <strong>{{ taskType }}</strong> ({{ energyLevel }} energy).</p>
+        </div>
+
+        <button class="btn-primary" (click)="startSession()">
+          ▶ Start Coding Session & Play Audio
+        </button>
+      </div>
+
+      <div class="result-details">
+        <app-playlist-card
+          [playlist]="recommendedPlaylist"
+          [title]="recommendedPlaylist.title"
+          [mood]="recommendedPlaylist.mood"
+          [description]="recommendedPlaylist.description"
+          [songCount]="recommendedPlaylist.tracks">
+        </app-playlist-card>
+
+        <div class="recommendation-notes">
+          <h4>Why this match works:</h4>
+          <ul>
+            <li>🎯 Frequency profile tuned to optimize {{ selectedMood.toLowerCase() }} focus.</li>
+            <li>⏱️ Includes {{ recommendedPlaylist.tracks }} curated tracks for a {{ recommendedPlaylist.duration }} deep work window.</li>
+            <li>🎧 Ambient layer set to <strong>{{ selectedAmbient.toUpperCase() }}</strong> for reduced environmental distractions.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

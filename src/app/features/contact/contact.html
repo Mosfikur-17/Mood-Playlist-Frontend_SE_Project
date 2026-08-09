@@ -1,0 +1,80 @@
+<section class="contact-page">
+  <div class="contact-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">GET IN TOUCH</span>
+      <h1>Contact & Developer Support</h1>
+      <p>Have feedback, playlist recommendations, or questions? Send us a message.</p>
+    </div>
+
+    <div class="contact-grid">
+      
+      <!-- Left Info Box -->
+      <div class="info-card glass-card">
+        <h3>Communication Channels</h3>
+        <p>Our team builds open-source developer productivity audio tools.</p>
+
+        <div class="info-item">
+          <span class="info-icon">📍</span>
+          <div>
+            <strong>Location</strong>
+            <p>San Francisco, CA & Remote Global</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="info-icon">📧</span>
+          <div>
+            <strong>Support Email</strong>
+            <p>support&#64;moodplaylist.dev</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="info-icon">💬</span>
+          <div>
+            <strong>Community Discord</strong>
+            <p>discord.gg/moodplaylist</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <form class="form-card glass-card" (ngSubmit)="submit()">
+        <div class="toast-alert" *ngIf="sent">
+          ✓ Thank you! Your message has been submitted.
+        </div>
+
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input id="name" name="name" [(ngModel)]="name" required placeholder="Alex Rivera" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" [(ngModel)]="email" required placeholder="alex@example.com" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="subject">Topic Subject</label>
+          <select id="subject" name="subject" [(ngModel)]="subject" class="form-input">
+            @for (s of subjects; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" [(ngModel)]="message" rows="4" required placeholder="Tell us what's on your mind..." class="form-input"></textarea>
+        </div>
+
+        <button class="btn-primary" type="submit">
+          🚀 Send Message
+        </button>
+      </form>
+
+    </div>
+
+  </div>
+</section>

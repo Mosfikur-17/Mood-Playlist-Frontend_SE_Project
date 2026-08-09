@@ -1,22 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { MoodAnalysisComponent } from './mood-analysis';
 
-import { MoodAnalysis } from './mood-analysis';
-
-describe('MoodAnalysis', () => {
-  let component: MoodAnalysis;
-  let fixture: ComponentFixture<MoodAnalysis>;
-
+describe('MoodAnalysisComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoodAnalysis],
+      imports: [MoodAnalysisComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(MoodAnalysis);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should create mood analysis component', () => {
+    const fixture = TestBed.createComponent(MoodAnalysisComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

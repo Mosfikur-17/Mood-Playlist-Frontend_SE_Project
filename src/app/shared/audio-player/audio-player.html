@@ -1,0 +1,107 @@
+<div class="player-bar" *ngIf="audioService.currentTrack() as track">
+  <div class="player-container">
+    
+    <!-- Track Info & Cover Art -->
+    <div class="track-info">
+      <div class="art-cover" [style.background]="audioService.currentPlaylist()?.coverColor || 'var(--accent-primary)'">
+        <span class="music-icon">🎵</span>
+        <div class="sound-wave" *ngIf="audioService.isPlaying()">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="track-title" [title]="track.title">{{ track.title }}</div>
+        <div class="artist-name">
+          {{ track.artist }} • 
+          <span class="playlist-badge">{{ audioService.currentPlaylist()?.title || 'Playlist' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Playback Controls & Progress Bar -->
+    <div class="player-controls">
+      <div class="control-buttons">
+        <button class="btn-icon" (click)="audioService.toggleShuffle()" [class.active]="audioService.isShuffle()" title="Shuffle">
+          🔀
+        </button>
+        <button class="btn-icon" (click)="audioService.previousTrack()" title="Previous Track">
+          ⏮
+        </button>
+        <button class="btn-play" (click)="audioService.togglePlay()" [title]="audioService.isPlaying() ? 'Pause' : 'Play'">
+          {{ audioService.isPlaying() ? '❚❚' : '▶' }}
+        </button>
+        <button class="btn-icon" (click)="audioService.nextTrack()" title="Next Track">
+          ⏭
+        </button>
+        <button class="btn-icon" (click)="audioService.toggleLoop()" [class.active]="audioService.isLoop()" title="Repeat">
+          🔁
+        </button>
+      </div>
+
+      <div class="time-scrubber">
+        <span class="time-text">{{ formatTime(audioService.currentTime()) }}</span>
+        <div class="progress-bar-wrapper">
+          <input 
+            type="range" 
+            class="seek-slider" 
+            [min]="0" 
+            [max]="audioService.duration()" 
+            [value]="audioService.currentTime()"
+            (input)="onSeekChange($event)"
+          />
+          <div class="progress-fill" [style.width.%]="audioService.progressPercentage()"></div>
+        </div>
+        <span class="time-text">{{ formatTime(audioService.duration()) }}</span>
+      </div>
+    </div>
+
+    <!-- Right Side: Volume & Ambient Sound Selector -->
+    <div class="player-right">
+      <!-- Ambient sound menu -->
+      <div class="ambient-selector">
+        <span class="ambient-label">Ambient Sound:</span>
+        <button 
+          class="ambient-btn" 
+          [class.active]="audioService.ambientSound() === 'rain'"
+          (click)="setAmbient(audioService.ambientSound() === 'rain' ? 'off' : 'rain')"
+          title="Rain Noise"
+        >
+          🌧️
+        </button>
+        <button 
+          class="ambient-btn" 
+          [class.active]="audioService.ambientSound() === 'ocean'"
+          (click)="setAmbient(audioService.ambientSound() === 'ocean' ? 'off' : 'ocean')"
+          title="Ocean Waves"
+        >
+          🌊
+        </button>
+        <button 
+          class="ambient-btn" 
+          [class.active]="audioService.ambientSound() === 'white-noise'"
+          (click)="setAmbient(audioService.ambientSound() === 'white-noise' ? 'off' : 'white-noise')"
+          title="White Noise"
+        >
+          📻
+        </button>
+      </div>
+
+      <!-- Volume control -->
+      <div class="volume-control">
+        <button class="btn-icon" (click)="audioService.toggleMute()">
+          {{ audioService.isMuted() || audioService.volume() === 0 ? '🔇' : '🔊' }}
+        </button>
+        <input 
+          type="range" 
+          class="volume-slider" 
+          min="0" 
+          max="100" 
+          [value]="audioService.isMuted() ? 0 : audioService.volume()" 
+          (input)="onVolumeChange($event)"
+        />
+      </div>
+    </div>
+
+  </div>
+</div>

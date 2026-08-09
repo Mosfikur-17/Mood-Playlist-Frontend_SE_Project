@@ -1,1 +1,22 @@
-<p>mood-card works!</p>
+<button
+  class="mood-card glass-card"
+  [class.selected]="selected"
+  [attr.data-mood]="mood.toLowerCase()"
+  (click)="selectMood()">
+
+  <div class="mood-icon-wrapper">
+    <span class="mood-icon">{{ icon }}</span>
+  </div>
+
+  <div class="mood-details">
+    <h3>{{ mood }}</h3>
+    <p>{{ description }}</p>
+  </div>
+
+  @if (selected) {
+    <div class="selection-indicator">
+      ✓ Active
+    </div>
+  }
+
+</button>

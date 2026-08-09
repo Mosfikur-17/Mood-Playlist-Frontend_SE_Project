@@ -1,0 +1,64 @@
+.mood-card {
+  width: 100%;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+}
+
+.mood-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mood-card:hover .mood-icon-wrapper {
+  transform: scale(1.15) rotate(6deg);
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.mood-details h3 {
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+
+.mood-details p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Selection active states per mood */
+.mood-card.selected {
+  border-color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.12);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+
+  .mood-icon-wrapper {
+    background: var(--accent-primary);
+    color: #fff;
+    box-shadow: 0 0 20px var(--accent-primary);
+  }
+}
+
+.selection-indicator {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.2);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}

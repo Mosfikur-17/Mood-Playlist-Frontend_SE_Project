@@ -1,0 +1,40 @@
+<section class="faq-page">
+  <div class="faq-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">KNOWLEDGE BASE</span>
+      <h1>Frequently Asked Questions</h1>
+      <p>Everything you need to know about MoodPlaylist soundscapes, Web Audio engine, and session tracking.</p>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box glass-card">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        placeholder="Search questions or topics..." 
+        [(ngModel)]="searchQuery"
+        class="form-input"
+      />
+    </div>
+
+    <!-- Accordion List -->
+    <div class="accordion-list">
+      @for (item of filteredFaqs; track item.id) {
+        <div class="accordion-card glass-card" [class.open]="item.open">
+          
+          <button class="accordion-header" (click)="toggle(item)">
+            <h3>{{ item.q }}</h3>
+            <span class="toggle-icon">{{ item.open ? '−' : '+' }}</span>
+          </button>
+
+          <div class="accordion-body" *ngIf="item.open">
+            <p>{{ item.a }}</p>
+          </div>
+
+        </div>
+      }
+    </div>
+
+  </div>
+</section>

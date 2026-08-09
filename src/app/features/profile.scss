@@ -1,0 +1,141 @@
+.profile-page {
+  padding: 60px 24px;
+}
+
+.profile-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+}
+
+.toast-alert {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-align: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.profile-header {
+  padding: 36px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px var(--accent-glow);
+}
+
+.header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.header-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  h1 { font-size: 1.8rem; }
+}
+
+.user-email {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.user-bio {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.profile-card {
+  padding: 32px;
+}
+
+.card-header-bar {
+  margin-bottom: 24px;
+  h2 { font-size: 1.3rem; }
+  .sub-text { font-size: 0.85rem; color: var(--text-muted); }
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus:not(:disabled) {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 14px var(--accent-glow);
+  }
+}
+
+select.form-input {
+  background: var(--bg-surface);
+}
+
+.back-link {
+  color: var(--accent-primary);
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px;
+}

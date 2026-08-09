@@ -1,0 +1,67 @@
+<section class="settings-page">
+  <div class="settings-container">
+
+    <div class="page-header">
+      <span class="badge badge-focus">APPLICATION CONTROL</span>
+      <h1>Preferences & Settings</h1>
+      <p>Configure audio synthesis defaults, notification reminders, and interface layouts.</p>
+    </div>
+
+    <div class="settings-card glass-card">
+      <div class="toast-alert" *ngIf="saved">
+        ✓ Your preferences have been saved to local storage!
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-text">
+          <strong>🔊 High Quality Audio Synthesizer</strong>
+          <small>Uses multi-oscillator binaural harmonic rendering for deeper soundscapes.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="highQuality">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-text">
+          <strong>▶ Autoplay Recommended Playlists</strong>
+          <small>Automatically start playback when generating mood analysis results.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="autoplay">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-text">
+          <strong>🔔 Focus Session Reminders</strong>
+          <small>Receive periodic browser notifications to take break & hydrate.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="notifications">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-text">
+          <strong>📱 Compact Grid Cards Layout</strong>
+          <small>Display more playlists per screen with reduced padding.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="compactCards">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="save-actions">
+        <button class="btn-primary" (click)="save()">💾 Save Preferences</button>
+      </div>
+    </div>
+
+    <a routerLink="/dashboard" class="back-link">← Back to Workspace Dashboard</a>
+
+  </div>
+</section>
