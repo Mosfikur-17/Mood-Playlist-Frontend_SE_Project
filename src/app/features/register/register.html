@@ -1,7 +1,69 @@
 <section class="auth-page">
   <div class="auth-container">
     
-    <div class="auth-card glass-card">
+    <!-- Survey Step Card -->
+    <div class="auth-card glass-card onboarding-survey" *ngIf="showSurvey">
+      <div class="auth-header">
+        <span class="logo-icon">🎯</span>
+        <h2>Personalize Your Space</h2>
+        <p>Step {{ surveyStep }} of 3: Help us tailor your coding soundscapes</p>
+        <div class="step-progress-bar">
+          <div class="progress-fill" [style.width.%]="(surveyStep / 3) * 100"></div>
+        </div>
+      </div>
+
+      <!-- Question 1: Programming Stack -->
+      <div *ngIf="surveyStep === 1" class="survey-question">
+        <h3>What is your primary programming language / stack?</h3>
+        <div class="options-grid">
+          <button 
+            type="button" 
+            *ngFor="let lang of languages" 
+            class="option-pill"
+            [class.selected]="preferredLanguage === lang"
+            (click)="preferredLanguage = lang">
+            {{ lang }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Question 2: Audio Genre -->
+      <div *ngIf="surveyStep === 2" class="survey-question">
+        <h3>What coding soundscapes/genres do you prefer?</h3>
+        <div class="options-grid">
+          <button 
+            type="button" 
+            *ngFor="let gen of genres" 
+            class="option-pill"
+            [class.selected]="preferredGenre === gen"
+            (click)="preferredGenre = gen">
+            {{ gen }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Question 3: Intensity -->
+      <div *ngIf="surveyStep === 3" class="survey-question">
+        <h3>What level of energy/intensity do you prefer?</h3>
+        <div class="options-grid">
+          <button 
+            type="button" 
+            *ngFor="let intensity of intensities" 
+            class="option-pill"
+            [class.selected]="preferredIntensity === intensity"
+            (click)="preferredIntensity = intensity">
+            {{ intensity }}
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-primary full-width-btn survey-next-btn" (click)="nextStep()">
+        {{ surveyStep === 3 ? 'Finish & Open Dashboard' : 'Continue' }}
+      </button>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="auth-card glass-card" *ngIf="!showSurvey">
       <div class="auth-header">
         <span class="logo-icon">✨</span>
         <h2>Create Account</h2>

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import { Playlist, Track } from '../models/playlist.model';
 import { environment } from '../../../environments/environment.development';
@@ -27,11 +27,13 @@ export class RecommendationService {
   private readonly baseUrl = environment.apiUrl;
 
   generateRecommendation(mood: string, intensity = 5, task = 'Coding'): Observable<Playlist> {
+    const token = localStorage.getItem('mood_playlist_token');
+    const headers = new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
     return this.http.post<RecommendationResponseDto>(`${this.baseUrl}/recommendations/generate`, {
       mood,
       intensity,
       task
-    }).pipe(
+    }, { headers }).pipe(
       map(res => this.transformToPlaylist(res)),
       catchError(err => {
         console.warn('Backend recommendation API unreachable, using fallback transformer.', err);

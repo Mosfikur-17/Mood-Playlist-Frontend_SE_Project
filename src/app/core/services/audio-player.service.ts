@@ -1,6 +1,38 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Playlist, Track } from '../models/playlist.model';
 
+interface YouTubePlayer {
+  loadVideoById(videoId: string): void;
+  playVideo(): void;
+  pauseVideo(): void;
+  seekTo(seconds: number, allowSeekAhead?: boolean): void;
+  setVolume(volume: number): void;
+  mute(): void;
+  unMute(): void;
+  getCurrentTime(): number;
+  getDuration(): number;
+  getPlayerState(): number;
+  destroy(): void;
+}
+
+interface YouTubeApi {
+  Player: new (element: HTMLElement, options: {
+    height: string;
+    width: string;
+    videoId: string;
+    playerVars: Record<string, number | string>;
+    events: {
+      onReady: () => void;
+      onStateChange: (event: { data: number }) => void;
+    };
+  }) => YouTubePlayer;
+  PlayerState: {
+    ENDED: number;
+    PLAYING: number;
+    PAUSED: number;
+  };
+}
+
 export type AmbientSoundType = 'off' | 'rain' | 'ocean' | 'cafe' | 'white-noise';
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +63,12 @@ export class AudioPlayerService {
   private ambientGainNode: GainNode | null = null;
   private ambientNoiseSource: AudioBufferSourceNode | null = null;
   private playbackTimer: any = null;
+  private youtubePlayer: YouTubePlayer | null = null;
+  private youtubeApi: YouTubeApi | null = null;
+  private youtubeHost: HTMLElement | null = null;
+  private youtubeReady = false;
+  private pendingVideoId: string | null = null;
+  private pendingAutoplay = false;
 
   constructor() {
     // Synchronize volume updates
@@ -70,7 +108,6 @@ export class AudioPlayerService {
   }
 
   playTrack(track: Track, playlist?: Playlist, index?: number): void {
-    this.initAudioContext();
     if (playlist) {
       this.currentPlaylist.set(playlist);
     }
@@ -79,11 +116,17 @@ export class AudioPlayerService {
       this.currentTrackIndex.set(index);
     }
     this.currentTime.set(0);
-    this.duration.set(210); // 3 minutes standard preview track
+    this.duration.set(210);
     this.isPlaying.set(true);
 
-    this.startSynthAudio(track);
-    this.startTimer();
+    if (this.isYouTubeTrack(track.id)) {
+      this.playYouTubeTrack(track.id);
+    } else {
+      this.youtubePlayer?.pauseVideo();
+      this.initAudioContext();
+      this.startSynthAudio(track);
+      this.startTimer();
+    }
   }
 
   togglePlay(): void {
@@ -94,19 +137,32 @@ export class AudioPlayerService {
     this.isPlaying.set(nextState);
 
     if (nextState) {
+      if (this.youtubePlayer && this.isYouTubeTrack(this.currentTrack()!.id)) {
+        this.youtubePlayer.playVideo();
+        this.startTimer();
+        return;
+      }
       this.initAudioContext();
       if (this.currentTrack()) {
         this.startSynthAudio(this.currentTrack()!);
       }
       this.startTimer();
     } else {
-      this.stopSynthAudio();
+      if (this.youtubePlayer && this.isYouTubeTrack(this.currentTrack()!.id)) {
+        this.youtubePlayer.pauseVideo();
+      } else {
+        this.stopSynthAudio();
+      }
       this.stopTimer();
     }
   }
 
   seek(seconds: number): void {
-    this.currentTime.set(Math.max(0, Math.min(seconds, this.duration())));
+    const nextTime = Math.max(0, Math.min(seconds, this.duration()));
+    this.currentTime.set(nextTime);
+    if (this.youtubePlayer && this.currentTrack() && this.isYouTubeTrack(this.currentTrack()!.id)) {
+      this.youtubePlayer.seekTo(nextTime, true);
+    }
   }
 
   setVolume(val: number): void {
@@ -115,11 +171,21 @@ export class AudioPlayerService {
       const vol = this.isMuted() ? 0 : val / 100;
       this.gainNode.gain.setValueAtTime(vol * 0.15, this.audioCtx.currentTime);
     }
+    if (this.youtubePlayer) {
+      this.youtubePlayer.setVolume(this.isMuted() ? 0 : val);
+    }
   }
 
   toggleMute(): void {
     this.isMuted.set(!this.isMuted());
     this.setVolume(this.volume());
+    if (this.youtubePlayer) {
+      if (this.isMuted()) {
+        this.youtubePlayer.mute();
+      } else {
+        this.youtubePlayer.unMute();
+      }
+    }
   }
 
   toggleShuffle(): void {
@@ -160,7 +226,9 @@ export class AudioPlayerService {
     this.stopTimer();
     this.playbackTimer = setInterval(() => {
       if (this.isPlaying()) {
-        const next = this.currentTime() + 1;
+        const next = this.youtubePlayer && this.currentTrack() && this.isYouTubeTrack(this.currentTrack()!.id)
+          ? this.youtubePlayer.getCurrentTime()
+          : this.currentTime() + 1;
         if (next >= this.duration()) {
           if (this.isLoop()) {
             this.currentTime.set(0);
@@ -220,6 +288,106 @@ export class AudioPlayerService {
       try { this.oscNode2.stop(); this.oscNode2.disconnect(); } catch {}
       this.oscNode2 = null;
     }
+  }
+
+  private playYouTubeTrack(videoId: string): void {
+    this.stopSynthAudio();
+    this.stopTimer();
+    this.pendingVideoId = videoId;
+    this.pendingAutoplay = true;
+    this.loadYouTubeApi();
+
+    if (this.youtubePlayer && this.youtubeReady) {
+      this.youtubePlayer.loadVideoById(videoId);
+      this.youtubePlayer.playVideo();
+      this.applyYouTubeVolume();
+    }
+  }
+
+  private loadYouTubeApi(): void {
+    if (this.youtubeReady || this.youtubePlayer) return;
+
+    const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+    const globalWindow = window as typeof window & {
+      YT?: YouTubeApi;
+      onYouTubeIframeAPIReady?: () => void;
+    };
+    const createPlayer = (): void => {
+      if (!globalWindow.YT || this.youtubePlayer) return;
+      this.youtubeApi = globalWindow.YT;
+      this.youtubeReady = true;
+      this.youtubeHost = document.createElement('div');
+      this.youtubeHost.setAttribute('aria-hidden', 'true');
+      Object.assign(this.youtubeHost.style, {
+        position: 'fixed',
+        width: '1px',
+        height: '1px',
+        left: '-10px',
+        bottom: '0',
+        opacity: '0',
+        pointerEvents: 'none'
+      });
+      document.body.appendChild(this.youtubeHost);
+      this.youtubePlayer = new this.youtubeApi.Player(this.youtubeHost, {
+        height: '1',
+        width: '1',
+        videoId: this.pendingVideoId || '',
+        playerVars: { autoplay: 0, controls: 0, playsinline: 1, origin: window.location.origin },
+        events: {
+          onReady: () => {
+            this.applyYouTubeVolume();
+            if (this.pendingVideoId && this.pendingAutoplay) {
+              this.youtubePlayer?.loadVideoById(this.pendingVideoId);
+              this.youtubePlayer?.playVideo();
+            }
+          },
+          onStateChange: event => this.handleYouTubeState(event.data)
+        }
+      });
+    };
+
+    globalWindow.onYouTubeIframeAPIReady = createPlayer;
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      document.head.appendChild(script);
+    } else if (globalWindow.YT) {
+      createPlayer();
+    }
+  }
+
+  private handleYouTubeState(state: number): void {
+    if (!this.youtubeApi) return;
+    if (state === this.youtubeApi.PlayerState.PLAYING) {
+      this.isPlaying.set(true);
+      const youtubeDuration = this.youtubePlayer?.getDuration() || 0;
+      if (youtubeDuration > 0) this.duration.set(youtubeDuration);
+      this.startTimer();
+    } else if (state === this.youtubeApi.PlayerState.PAUSED) {
+      this.isPlaying.set(false);
+      this.stopTimer();
+    } else if (state === this.youtubeApi.PlayerState.ENDED) {
+      this.isPlaying.set(false);
+      this.stopTimer();
+      if (this.isLoop()) {
+        this.youtubePlayer?.seekTo(0, true);
+        this.youtubePlayer?.playVideo();
+      } else {
+        this.nextTrack();
+      }
+    }
+  }
+
+  private applyYouTubeVolume(): void {
+    if (!this.youtubePlayer) return;
+    this.youtubePlayer.setVolume(this.isMuted() ? 0 : this.volume());
+    if (this.isMuted()) this.youtubePlayer.mute();
+    else this.youtubePlayer.unMute();
+  }
+
+  private isYouTubeTrack(id: string): boolean {
+    return /^[A-Za-z0-9_-]{11}$/.test(id);
   }
 
   private playAmbientNoise(type: AmbientSoundType): void {

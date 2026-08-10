@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 import { Playlist, Track } from '../models/playlist.model';
 import { environment } from '../../../environments/environment.development';
@@ -118,7 +118,8 @@ export class PlaylistService {
   }
 
   syncPlaylistsWithBackend(): void {
-    this.http.get<any[]>(`${this.baseUrl}/playlists`).pipe(
+    const headers = this.authHeaders();
+    this.http.get<any[]>(`${this.baseUrl}/playlists`, { headers }).pipe(
       catchError(() => of([]))
     ).subscribe(remotePlaylists => {
       if (remotePlaylists && remotePlaylists.length > 0) {
@@ -186,6 +187,7 @@ export class PlaylistService {
     this.playlists.set([created, ...this.playlists()]);
 
     // Async save to backend MongoDB
+    const headers = this.authHeaders();
     this.http.post<any>(`${this.baseUrl}/playlists`, {
       title: created.title,
       mood: created.mood.toLowerCase(),
@@ -204,7 +206,7 @@ export class PlaylistService {
         bpm: t.bpm || 72,
         audio_freq: t.audioFreq || 220
       }))
-    }).pipe(
+    }, { headers }).pipe(
       catchError(err => {
         console.warn('Playlist save fallback: offline or connection error', err);
         return of(null);
@@ -220,7 +222,8 @@ export class PlaylistService {
 
   deletePlaylist(id: string): void {
     this.playlists.set(this.playlists().filter(p => p.id !== id));
-    this.http.delete(`${this.baseUrl}/playlists/${id}`).pipe(
+    const headers = this.authHeaders();
+    this.http.delete(`${this.baseUrl}/playlists/${id}`, { headers }).pipe(
       catchError(() => of(null))
     ).subscribe();
   }
@@ -259,5 +262,10 @@ export class PlaylistService {
     } catch {
       return [];
     }
+  }
+
+  private authHeaders(): HttpHeaders {
+    const token = localStorage.getItem('mood_playlist_token');
+    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
   }
 }
