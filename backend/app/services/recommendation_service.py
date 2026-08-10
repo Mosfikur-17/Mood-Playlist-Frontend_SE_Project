@@ -19,6 +19,11 @@ MOOD_QUERY_MAP: Dict[str, Dict[str, str]] = {
         "title": "Happy Refactor Flow",
         "description": "Bright, uplifting tracks to keep your coding momentum high."
     },
+    "angry": {
+        "query": "energetic rock coding music",
+        "title": "High Voltage Coding Flow",
+        "description": "Driving rock and electronic tracks for intense problem solving."
+    },
     "relaxed": {
         "query": "chill ambient coding music",
         "title": "Calm Soundscapes & Code",
@@ -55,7 +60,10 @@ class RecommendationService:
         """Generates mood-based playlist recommendation using rule-based recommendation logic."""
         clean_mood = request.mood.lower().strip()
         mapping = MOOD_QUERY_MAP.get(clean_mood, MOOD_QUERY_MAP["focused"])
-        query = mapping["query"]
+        task = (request.task or "Coding").strip()
+        intensity = request.intensity or 5
+        intensity_hint = "high energy" if intensity >= 8 else "gentle" if intensity <= 3 else "steady"
+        query = f"{mapping['query']} {task.lower()} {intensity_hint}"
 
         # Call YouTube Service
         youtube_res = await youtube_service.search_videos(
@@ -72,7 +80,7 @@ class RecommendationService:
                     query=query,
                     video_ids=[v.video_id for v in youtube_res.videos],
                     user_id=user_id,
-                    intensity=request.intensity or 5
+                    intensity=intensity
                 )
                 db_manager.db.recommendations.insert_one(rec_doc)
             except Exception as e:

@@ -21,6 +21,13 @@ export interface RecommendationResponseDto {
   }[];
 }
 
+interface YouTubeSearchResponseDto {
+  query: string;
+  mood?: string;
+  total_results: number;
+  videos: RecommendationResponseDto['videos'];
+}
+
 @Injectable({ providedIn: 'root' })
 export class RecommendationService {
   private readonly http = inject(HttpClient);
@@ -37,21 +44,24 @@ export class RecommendationService {
       map(res => this.transformToPlaylist(res)),
       catchError(err => {
         console.warn('Backend recommendation API unreachable, using fallback transformer.', err);
-        return of(this.getFallbackPlaylist(mood));
+        return this.searchYouTube(`${mood} ${task} music`, mood).pipe(
+          map(res => res.videos?.length ? this.transformSearchToPlaylist(res, mood) : this.getFallbackPlaylist(mood)),
+          catchError(() => of(this.getFallbackPlaylist(mood)))
+        );
       })
     );
   }
 
-  searchYouTube(query: string, mood = 'focused'): Observable<any> {
-    return this.http.get(`${this.baseUrl}/youtube/search`, {
+  searchYouTube(query: string, mood = 'focused'): Observable<YouTubeSearchResponseDto> {
+    return this.http.get<YouTubeSearchResponseDto>(`${this.baseUrl}/youtube/search`, {
       params: { query, mood }
     }).pipe(
-      catchError(() => of({ videos: [] }))
+      catchError(() => of({ query, mood, total_results: 0, videos: [] }))
     );
   }
 
   private transformToPlaylist(dto: RecommendationResponseDto): Playlist {
-    const tracksList: Track[] = (dto.videos || []).map((v, idx) => ({
+    const tracksList: Track[] = (dto.videos || []).map(v => ({
       id: v.video_id,
       title: v.title,
       artist: v.channel_title || 'YouTube Music',
@@ -76,6 +86,16 @@ export class RecommendationService {
     };
   }
 
+  private transformSearchToPlaylist(dto: YouTubeSearchResponseDto, mood: string): Playlist {
+    return this.transformToPlaylist({
+      mood: dto.mood || mood,
+      query: dto.query,
+      playlist_title: `${mood.charAt(0).toUpperCase() + mood.slice(1)} YouTube Mix`,
+      description: `YouTube music selected for your ${mood.toLowerCase()} ${dto.query.includes('coding') ? 'coding' : ''} session.`.replace('  ', ' '),
+      videos: dto.videos
+    });
+  }
+
   private getFallbackPlaylist(mood: string): Playlist {
     const cleanMood = mood.charAt(0).toUpperCase() + mood.slice(1).toLowerCase();
     return {
@@ -90,8 +110,8 @@ export class RecommendationService {
       coverColor: this.getCoverColorForMood(mood),
       tags: [cleanMood, 'Lo-Fi', 'Developer'],
       tracksList: [
-        { id: 'fb-1', title: 'Lofi Hip Hop Radio', artist: 'Lofi Girl', duration: '3:45', mood: cleanMood, bpm: 70, audioFreq: 220 },
-        { id: 'fb-2', title: 'Midnight Terminal', artist: 'LoFi Coder', duration: '4:12', mood: cleanMood, bpm: 72, audioFreq: 230 }
+        { id: 'jfKfPfyJRdk', title: 'Lofi Hip Hop Radio', artist: 'Lofi Girl', duration: '3:45', mood: cleanMood, bpm: 70, audioFreq: 220 },
+        { id: '5qap5aO4i9A', title: 'Lofi Music for Coding', artist: 'Music for Coding', duration: '4:12', mood: cleanMood, bpm: 72, audioFreq: 230 }
       ]
     };
   }

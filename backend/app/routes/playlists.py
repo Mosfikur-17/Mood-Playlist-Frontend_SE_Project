@@ -23,9 +23,9 @@ async def get_playlists(
     return await playlist_service.get_playlists(user_id=user_id, mood=mood)
 
 @router.get("/{playlist_id}", response_model=PlaylistResponse, summary="Get Single Playlist")
-async def get_playlist_by_id(playlist_id: str):
+async def get_playlist_by_id(playlist_id: str, user_id: str = Depends(get_current_user_id)):
     """Retrieves single playlist details by ID."""
-    pl = await playlist_service.get_playlist_by_id(playlist_id)
+    pl = await playlist_service.get_playlist_by_id(playlist_id, user_id=user_id)
     if not pl:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Playlist not found")
     return pl

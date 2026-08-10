@@ -3,17 +3,25 @@ from typing import Optional
 from app.schemas.auth import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse
 from app.services.auth_service import auth_service
 from app.core.security import decode_access_token
+from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 async def get_current_user_id(authorization: Optional[str] = Header(None)) -> str:
     """Dependency helper to extract user ID from Authorization header Bearer token."""
-    if not authorization or not authorization.startswith("Bearer "):
-        return "usr-demo-1"
-    token = authorization.split(" ")[1]
+    if not authorization:
+        if settings.ENVIRONMENT != "production":
+            return "usr-demo-1"
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authorization scheme")
+    token_parts = authorization.split(" ", 1)
+    if len(token_parts) != 2 or not token_parts[1].strip():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid bearer token")
+    token = token_parts[1]
     payload = decode_access_token(token)
     if not payload or "sub" not in payload:
-        return "usr-demo-1"
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
     return payload["sub"]
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED, summary="Register User")

@@ -1,4 +1,18 @@
-# MoodPlaylistFrontend
+# Mood-Driven Coding Playlist Generator
+
+Angular frontend with a FastAPI, MongoDB, JWT, and YouTube Data API backend.
+
+## Backend
+
+The backend lives in `backend/`. See [backend/README.md](backend/README.md) for setup, environment variables, API routes, testing, and deployment instructions.
+
+From the repository root, start the frontend with the project-local CLI:
+
+```bash
+npx ng serve --port 4200
+```
+
+The development frontend expects the API at `http://localhost:8000/api`.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.3.
 

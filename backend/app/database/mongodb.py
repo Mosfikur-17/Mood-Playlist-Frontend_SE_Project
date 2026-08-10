@@ -14,8 +14,12 @@ class MongoDBManager:
 
     def connect(self) -> bool:
         """Connects to MongoDB server and initializes database & collections."""
+        if not settings.MONGODB_URI:
+            logger.warning("MONGODB_URI is not configured; using in-memory development fallback.")
+            self.is_connected = False
+            return False
         try:
-            logger.info(f"Connecting to MongoDB at {settings.MONGODB_URI}...")
+            logger.info("Connecting to MongoDB...")
             self.client = MongoClient(
                 settings.MONGODB_URI,
                 serverSelectionTimeoutMS=3000,

@@ -1,4 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, of } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
 
 export interface MoodSession {
   id: string;
@@ -10,6 +13,8 @@ export interface MoodSession {
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apiUrl;
   private readonly key = 'mood_playlist_sessions';
   readonly sessions = signal<MoodSession[]>(this.load());
 
@@ -41,6 +46,15 @@ export class SessionService {
     const next = [item, ...this.sessions()];
     this.sessions.set(next);
     localStorage.setItem(this.key, JSON.stringify(next));
+
+    const token = localStorage.getItem('mood_playlist_token');
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
+    this.http.post(`${this.baseUrl}/moods`, {
+      mood,
+      playlist,
+      duration: durationStr,
+      intensity: 5
+    }, { headers }).pipe(catchError(() => of(null))).subscribe();
   }
 
   clear(): void {

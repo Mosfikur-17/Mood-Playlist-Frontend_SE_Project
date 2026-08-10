@@ -178,16 +178,18 @@ class YouTubeService:
         """Searches YouTube Data API v3 with automatic fallback to curated coding video catalog."""
         api_key = settings.YOUTUBE_API_KEY
         clean_mood = (mood or "focused").lower()
+        clean_query = query.strip() or f"{clean_mood} coding music instrumental"
+        bounded_results = max(1, min(max_results, 50))
 
         if api_key and len(api_key.strip()) > 10:
             try:
                 url = "https://www.googleapis.com/youtube/v3/search"
                 params = {
                     "part": "snippet",
-                    "q": query,
+                    "q": clean_query,
                     "type": "video",
                     "videoCategoryId": "10", # Music category
-                    "maxResults": max_results,
+                    "maxResults": bounded_results,
                     "key": api_key
                 }
                 async with httpx.AsyncClient(timeout=5.0) as client:
@@ -197,7 +199,8 @@ class YouTubeService:
                         items = data.get("items", [])
                         videos: List[YouTubeVideoItem] = []
                         for item in items:
-                            v_id = item.get("id", {}).get("videoId")
+                            item_id = item.get("id", {})
+                            v_id = item_id.get("videoId") if isinstance(item_id, dict) else None
                             snippet = item.get("snippet", {})
                             if v_id and snippet:
                                 videos.append(
@@ -214,7 +217,7 @@ class YouTubeService:
                                 )
                         if videos:
                             return YouTubeSearchResponse(
-                                query=query,
+                                query=clean_query,
                                 mood=clean_mood,
                                 total_results=len(videos),
                                 videos=videos
@@ -241,7 +244,7 @@ class YouTubeService:
         ]
 
         return YouTubeSearchResponse(
-            query=query,
+            query=clean_query,
             mood=clean_mood,
             total_results=len(videos),
             videos=videos

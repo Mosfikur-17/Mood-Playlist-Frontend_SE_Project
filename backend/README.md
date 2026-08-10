@@ -53,10 +53,12 @@ backend/
    Copy `.env.example` to `.env` and configure your credentials:
 
    ```env
-   MONGODB_URI=mongodb://localhost:27017
+   MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
    DATABASE_NAME=mood_playlist_db
    YOUTUBE_API_KEY=your_youtube_api_key_here
-   JWT_SECRET=your_jwt_secret_key
+   JWT_SECRET_KEY=your-long-random-secret
+   JWT_ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=60
    FRONTEND_URL=http://localhost:4200
    ```
 
@@ -75,8 +77,21 @@ backend/
    pytest
    ```
 
+## API Surface
+
+- `GET /api/health` reports FastAPI status and MongoDB connectivity.
+- `GET /api/youtube/search` searches YouTube through the backend key, with curated fallback results when unavailable.
+- `POST /api/recommendations/generate` creates mood, task, and intensity-based recommendations.
+- `POST /api/playlists`, `GET /api/playlists`, `GET /api/playlists/{id}`, and `DELETE /api/playlists/{id}` manage user playlists.
+- `POST /api/auth/register`, `POST /api/auth/login`, and `GET /api/auth/me` provide JWT authentication.
+- `GET /api/moods`, `POST /api/moods`, `GET /api/moods/history`, and `GET /api/moods/latest` manage mood sessions.
+
+Requests without a token use the demo identity only in development. Production playlist, recommendation, mood, and profile requests require a valid bearer token.
+
 ## Deployment Readiness
 
 - **Render / Railway / Heroku**: Deploys out of the box using `requirements.txt` or `Dockerfile`.
 - **Port Handling**: Automatically binds to `$PORT` provided by platform environment.
 - **MongoDB Atlas**: Compatible with connection string `mongodb+srv://...` in `MONGODB_URI`.
+- **Render / Railway**: Set `PORT`, `MONGODB_URI`, `DATABASE_NAME`, `JWT_SECRET_KEY`, `YOUTUBE_API_KEY`, and `FRONTEND_URL` as platform environment variables. The container starts with `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+- **Secrets**: Keep `.env` local. Only commit `.env.example`; never expose the YouTube key to Angular.

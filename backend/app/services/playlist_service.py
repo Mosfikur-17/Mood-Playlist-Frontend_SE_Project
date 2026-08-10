@@ -135,11 +135,13 @@ class PlaylistService:
         return res
 
     @staticmethod
-    async def get_playlist_by_id(playlist_id: str) -> Optional[PlaylistResponse]:
+    async def get_playlist_by_id(playlist_id: str, user_id: Optional[str] = None) -> Optional[PlaylistResponse]:
         """Retrieves a single playlist by ID."""
         if db_manager.is_connected and db_manager.db is not None:
             try:
                 query = {"_id": ObjectId(playlist_id)} if ObjectId.is_valid(playlist_id) else {"_id": playlist_id}
+                if user_id:
+                    query["user_id"] = user_id
                 doc = db_manager.db.playlists.find_one(query)
                 if doc:
                     return format_playlist_doc(doc)
@@ -148,7 +150,7 @@ class PlaylistService:
 
         # Memory fallback search
         for d in IN_MEMORY_PLAYLISTS:
-            if str(d.get("_id")) == playlist_id:
+            if str(d.get("_id")) == playlist_id and (not user_id or d.get("user_id") == user_id):
                 return format_playlist_doc(d)
         return None
 
@@ -158,6 +160,7 @@ class PlaylistService:
         if db_manager.is_connected and db_manager.db is not None:
             try:
                 query = {"_id": ObjectId(playlist_id)} if ObjectId.is_valid(playlist_id) else {"_id": playlist_id}
+                query["user_id"] = user_id
                 res = db_manager.db.playlists.delete_one(query)
                 if res.deleted_count > 0:
                     return True
@@ -167,7 +170,10 @@ class PlaylistService:
         # Memory fallback
         global IN_MEMORY_PLAYLISTS
         initial_len = len(IN_MEMORY_PLAYLISTS)
-        IN_MEMORY_PLAYLISTS = [d for d in IN_MEMORY_PLAYLISTS if str(d.get("_id")) != playlist_id]
+        IN_MEMORY_PLAYLISTS = [
+            d for d in IN_MEMORY_PLAYLISTS
+            if not (str(d.get("_id")) == playlist_id and d.get("user_id") == user_id)
+        ]
         return len(IN_MEMORY_PLAYLISTS) < initial_len
 
 playlist_service = PlaylistService()

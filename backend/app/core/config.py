@@ -1,6 +1,6 @@
-import os
-from typing import List, Union
-from pydantic import Field
+import secrets
+from typing import List
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = Field(default="http://localhost:4200", validation_alias="FRONTEND_URL")
 
     # Database Settings
-    MONGODB_URI: str = Field(default="mongodb://localhost:27017", validation_alias="MONGODB_URI")
+    MONGODB_URI: str = Field(default="", validation_alias="MONGODB_URI")
     DATABASE_NAME: str = Field(default="mood_playlist_db", validation_alias="DATABASE_NAME")
 
     # External APIs
@@ -22,11 +22,11 @@ class Settings(BaseSettings):
 
     # Security & Auth Settings
     JWT_SECRET: str = Field(
-        default="super_secret_mood_playlist_jwt_key_2026_change_in_production",
-        validation_alias="JWT_SECRET"
+        default_factory=lambda: secrets.token_urlsafe(32),
+        validation_alias=AliasChoices("JWT_SECRET_KEY", "JWT_SECRET")
     )
-    ALGORITHM: str = Field(default="HS256", validation_alias="ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=1440, validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    ALGORITHM: str = Field(default="HS256", validation_alias=AliasChoices("JWT_ALGORITHM", "ALGORITHM"))
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES")
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -36,9 +36,9 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins(self) -> List[str]:
-        origins = [self.FRONTEND_URL, "http://localhost:4200", "http://127.0.0.1:4200"]
+        configured = [origin.strip() for origin in self.FRONTEND_URL.split(",") if origin.strip()]
         if self.ENVIRONMENT != "production":
-            origins.append("*")
-        return list(set(origins))
+            configured.extend(["http://localhost:4200", "http://127.0.0.1:4200"])
+        return list(dict.fromkeys(configured))
 
 settings = Settings()
